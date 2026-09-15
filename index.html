@@ -794,14 +794,23 @@
     // AUTH READY: dipicu setelah auth gate memvalidasi sesi
     // =========================================
    
-    document.addEventListener('authReady', function (e) {
+document.addEventListener('authReady', function (e) {
         var user = e.detail;
         if (user) {
             var nameEl = document.getElementById('userNameChip');
             var posEl = document.getElementById('userPosChip');
             var avatarEl = document.getElementById('userAvatarCircle');
+            
             var displayName = user.nama || 'User';
-            var displayPos = user.posisi || '-';
+            
+            // --- BAGIAN YANG DIUBAH ---
+            var userPos = user.posisi || '-';
+            // Ambil data lokasi dari properti yang ada di data user (misal: user.lokasi, user.region, atau user.cabang)
+            var userLoc = user.lokasi || user.region || user.cabang || '';
+            
+            // Gabungkan Posisi & Lokasi jika data lokasi tersedia
+            var displayPos = userLoc ? (userPos + ' - ' + userLoc) : userPos;
+            // ---------------------------
 
             // Fungsi untuk mengambil 2 huruf inisial dari nama
             function getInitials(name) {
