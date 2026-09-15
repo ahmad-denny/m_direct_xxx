@@ -790,6 +790,10 @@
     // =========================================
     // AUTH READY: dipicu setelah auth gate memvalidasi sesi
     // =========================================
+// =========================================
+    // AUTH READY: dipicu setelah auth gate memvalidasi sesi
+    // =========================================
+   
     document.addEventListener('authReady', function (e) {
         var user = e.detail;
         if (user) {
@@ -799,9 +803,21 @@
             var displayName = user.nama || 'User';
             var displayPos = user.posisi || '-';
 
+            // Fungsi untuk mengambil 2 huruf inisial dari nama
+            function getInitials(name) {
+                if (!name) return 'U';
+                var parts = name.trim().split(/\s+/);
+                if (parts.length >= 2) {
+                    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+                }
+                return parts[0].substring(0, 2).toUpperCase();
+            }
+
+            var initials = getInitials(displayName);
+
             if (nameEl) nameEl.textContent = displayName;
             if (posEl) posEl.textContent = displayPos;
-            if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
+            if (avatarEl) avatarEl.textContent = initials;
             
             // Update sidebar user info
             var sidebarNameEl = document.getElementById('sidebarUserName');
@@ -810,7 +826,7 @@
             
             if (sidebarNameEl) sidebarNameEl.textContent = displayName;
             if (sidebarPosEl) sidebarPosEl.textContent = displayPos;
-            if (sidebarAvatarEl) sidebarAvatarEl.textContent = displayName.charAt(0).toUpperCase();
+            if (sidebarAvatarEl) sidebarAvatarEl.textContent = initials;
         }
 
         document.getElementById('main-dashboard').style.display = 'flex';
