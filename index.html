@@ -335,7 +335,7 @@
 
         .sidebar-section {
             padding: 16px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 0px solid var(--border);
         }
 
         .sidebar-section:last-child {
@@ -733,16 +733,6 @@
     </div>
     
     <!-- User Info Section -->
-    <div class="sidebar-section">
-        <div class="sidebar-section-title">Logged in as</div>
-        <div class="user-info-card">
-            <div class="user-avatar-large" id="sidebarUserAvatar">U</div>
-            <div class="user-details">
-                <div class="user-name" id="sidebarUserName">-</div>
-                <div class="user-position" id="sidebarUserPosition">-</div>
-            </div>
-        </div>
-    </div>
     
     <!-- Filter Section -->
     <div class="sidebar-section">
@@ -785,6 +775,17 @@
         -->
         <button class="btn" onclick="resetSidebarFilters()" style="background: var(--text-muted);">Reset</button>
     </div>
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Logged in as</div>
+        <div class="user-info-card">
+            <div class="user-avatar-large" id="sidebarUserAvatar">U</div>
+            <div class="user-details">
+                <div class="user-name" id="sidebarUserName">-</div>
+                <div class="user-position" id="sidebarUserPosition">-</div>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 <script>
