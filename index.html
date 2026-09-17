@@ -811,25 +811,18 @@
     // AUTH READY: dipicu setelah auth gate memvalidasi sesi
     // =========================================
    
-document.addEventListener('authReady', function (e) {
+    document.addEventListener('authReady', function (e) {
         var user = e.detail;
         if (user) {
             var nameEl = document.getElementById('userNameChip');
             var posEl = document.getElementById('userPosChip');
             var avatarEl = document.getElementById('userAvatarCircle');
             
-            var displayName = user.nama || 'User';
-            
-            // --- BAGIAN YANG DIUBAH ---
-            var userPos = user.posisi || '-';
-            // Ambil data lokasi dari properti yang ada di data user (misal: user.lokasi, user.region, atau user.cabang)
-            var userLoc = user.lokasi || user.region || user.cabang || '';
-            
-            // Gabungkan Posisi & Lokasi jika data lokasi tersedia
-            var displayPos = userLoc ? (userPos + ' - ' + userLoc) : userPos;
-            // ---------------------------
-
-            // Fungsi untuk mengambil 2 huruf inisial dari nama
+            var displayName = user.nama || 'EFRIDA YANTI SIREGAR';
+            var userPos = user.posisi || 'BM-NC';
+            var userLoc = user.lokasi || user.region || user.cabang || 'PADANG SIDEMPUAN';
+    
+            // Fungsi inisial nama
             function getInitials(name) {
                 if (!name) return 'U';
                 var parts = name.trim().split(/\s+/);
@@ -838,23 +831,37 @@ document.addEventListener('authReady', function (e) {
                 }
                 return parts[0].substring(0, 2).toUpperCase();
             }
-
+    
             var initials = getInitials(displayName);
-
+    
             if (nameEl) nameEl.textContent = displayName;
-            if (posEl) posEl.textContent = displayPos;
             if (avatarEl) avatarEl.textContent = initials;
+    
+            // BENTUK DENGAN INNERHTML AGAR STYLING BADGE LOKASI HETAP TERJAGA
+            if (posEl) {
+                if (userLoc) {
+                    posEl.innerHTML = `
+                        <span>${userPos}</span>
+                        <span style="font-size:0.6rem; color:#8492a6;">•</span>
+                        <span style="background:#e8f8f0!important; color:#0e9f6e!important; font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:6px; display:inline-block; border:1px solid #c6f6d5;">
+                            ${userLoc}
+                        </span>
+                    `;
+                } else {
+                    posEl.textContent = userPos;
+                }
+            }
             
-            // Update sidebar user info
+            // Update sidebar user info jika ada
             var sidebarNameEl = document.getElementById('sidebarUserName');
             var sidebarPosEl = document.getElementById('sidebarUserPosition');
             var sidebarAvatarEl = document.getElementById('sidebarUserAvatar');
             
             if (sidebarNameEl) sidebarNameEl.textContent = displayName;
-            if (sidebarPosEl) sidebarPosEl.textContent = displayPos;
+            if (sidebarPosEl) sidebarPosEl.textContent = userPos + (userLoc ? ' - ' + userLoc : '');
             if (sidebarAvatarEl) sidebarAvatarEl.textContent = initials;
         }
-
+    
         document.getElementById('main-dashboard').style.display = 'flex';
         loadDataset();
     });
