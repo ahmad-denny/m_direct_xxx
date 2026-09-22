@@ -194,18 +194,50 @@
         .close-chart-btn:hover { background: var(--purple) ; border: 1px solid var(--border); color: #ffffff; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
         .canvas-container { position: relative; height: calc(100% - 30px); width: 100%; }
 
-        /* Table Area - SATU-SATUNYA YANG BOLEH SCROLL */
+/* Table Area - Scrollbar di bawah header tabel */
         .table-container {
             background: var(--surface); border-radius: 10px; border: 1px solid var(--border);
             box-shadow: var(--shadow-sm); 
             flex-grow: 1; /* Mengambil sisa ruang vertikal */
             min-height: 0; /* Penting untuk flex child agar bisa shrink & scroll */
-            overflow-y: auto; /* Scrollbar VERTIKAL HANYA DI SINI */
-            overflow-x: auto; 
+            overflow-x: auto; /* Scrollbar horizontal jika kolom meluap */
+            overflow-y: hidden; /* Matikan scroll pada container luar agar header tidak ikut ter-scroll */
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         
-        table { width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            text-align: left; 
+            table-layout: fixed; 
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Thead tetap di atas tanpa scrollbar */
+        thead {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            flex-shrink: 0;
+        }
+
+        /* Scrollbar VERTIKAL HANYA DI TBODY (di bawah header) */
+        tbody {
+            display: block;
+            overflow-y: auto;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
 
         /* Column Widths Desktop */
         th:nth-child(1), td:nth-child(1) { width: 10%; }
@@ -227,7 +259,7 @@
             border-bottom: 2px solid var(--border); cursor: pointer; white-space: nowrap;
         }
         body.dark-mode th { background: #1f2937; }
-        
+		
         td {
             padding: 8px 8px; color: var(--text-main); vertical-align: middle;
             border-bottom: 1px solid var(--border); font-size: 12px; line-height: 1.3;
