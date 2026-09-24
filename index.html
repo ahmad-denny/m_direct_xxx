@@ -56,29 +56,33 @@
         /* =========================================
            DASHBOARD STYLES
            ========================================= */
-        .container {
-            width: 100%;
-            max-width: 100%;
-            height: 100%; /* Mengisi penuh tinggi body */
-            margin: 0 auto;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px; 
-        }
-
-        /* HEADER */
-        .header-banner {            
-            align-items: center;
-            background: #ffffff;
-/*          display: flex;
-			justify-content: space-between;
-            padding: 12px 16px;
-            border-radius: none;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);*/
-            flex-shrink: 0; /* Header tidak boleh mengecil */
-        }
+		/* CONTAINER UTAMA */
+		.container {
+		    width: 100%;
+		    max-width: 100%;
+		    height: 100%;
+		    margin: 0 auto;
+		    padding: 0 12px 12px 12px; /* Ubah padding atas dari 12px menjadi 0 */
+		    display: flex;
+		    flex-direction: column;
+		    gap: 12px; 
+		}
+		
+		/* HEADER BANNER */
+		.header-banner {
+		    display: flex;
+		    align-items: center;
+		    justify-content: space-between;
+		    padding: 12px 16px;
+		    background: var(--surface);
+		    border-radius: 0 0 12px 12px; /* Ubah border-radius atas menjadi 0 (hanya sudut bawah yang melengkung) */
+		    box-shadow: var(--shadow-sm);
+		    border: 1px solid var(--border);
+		    border-top: none; /* Hilangkan border atas agar menyatu sempurna dengan tepi atas */
+		    margin-left: -12px; /* Tarik ke kiri menembus padding container */
+		    margin-right: -12px; /* Tarik ke kanan menembus padding container */
+		    flex-shrink: 0;
+		}
 
         .header-left-group {
             display: flex;
