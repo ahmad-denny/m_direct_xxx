@@ -895,8 +895,9 @@
     // AUTH READY: dipicu setelah auth gate memvalidasi sesi
     // =========================================
    
-    document.addEventListener('authReady', function (e) {
+    document.addEventListener('authReady', async function (e) {
         var user = e.detail;
+        loggedUser = user;
         if (user) {
             var nameEl = document.getElementById('userNameChip');
             var posEl = document.getElementById('userPosChip');
@@ -947,8 +948,52 @@
         }
     
         document.getElementById('main-dashboard').style.display = 'flex';
-        loadDataset();
+        await loadDataset();
+        applyLoggedUserBranchFilter();
     });
+
+    // Otomatis memfilter tabel sesuai cabang/branch milik user yang login.
+    // User dengan cabang "REGION" atau admin=TRUE tetap melihat semua branch (All Branch).
+    function applyLoggedUserBranchFilter() {
+        if (!loggedUser) return;
+
+        var rawCabang = (loggedUser.cabang || '').toString().trim();
+        var lokasi = (loggedUser.lokasi || '').toString().trim();
+        var isAdmin = String(loggedUser.admin).toUpperCase() === 'TRUE';
+
+        if (isAdmin || rawCabang.toUpperCase() === 'REGION') return;
+
+        // Field "cabang" biasanya berformat "411 - BATAM", sedangkan kolom "Branch"
+        // pada Dataset.json memakai nama tanpa kode ("BATAM"). Buang prefix kodenya.
+        var cabangNoCode = rawCabang.replace(/^\d+\s*-\s*/, '').trim();
+
+        var candidates = [lokasi, cabangNoCode, rawCabang]
+            .filter(Boolean)
+            .filter(v => v.toUpperCase() !== 'REGION');
+
+        if (!candidates.length) return;
+
+        var branchSet = Array.from(new Set((tableData || []).map(r => (r['Branch'] || '').toString().trim())));
+
+        var matchedBranch = '';
+        for (var i = 0; i < candidates.length; i++) {
+            var candUpper = candidates[i].toUpperCase();
+            var found = branchSet.find(b => b.toUpperCase() === candUpper);
+            if (found) { matchedBranch = found; break; }
+        }
+
+        if (!matchedBranch) {
+            console.warn(`Branch "${rawCabang}" milik user tidak ditemukan pada dataset.`);
+            return;
+        }
+
+        var branchFilter = document.getElementById('branchFilter');
+        var sidebarBranchFilter = document.getElementById('sidebarBranchFilter');
+        if (branchFilter) branchFilter.value = matchedBranch;
+        if (sidebarBranchFilter) sidebarBranchFilter.value = matchedBranch;
+
+        filterAndSearchTable();
+    }
 
     // Block shortcuts globally including login
     function blockShortcuts(e) {
@@ -1029,6 +1074,7 @@
     // DASHBOARD LOGIC
     // =========================================
     let tableData = [];
+    let loggedUser = null;
     let myChart = null;
     let headers = [];
     let currentSort = { col: -1, dir: 'asc' };
