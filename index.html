@@ -199,47 +199,39 @@
         .canvas-container { position: relative; height: calc(100% - 30px); width: 100%; }
 
 /* Table Area - Scrollbar di bawah header tabel */
-		/* Container Card Utama */
+/* Container Card Utama */
         .table-container {
             background: var(--surface); 
             border-radius: 12px; 
             border: 1px solid var(--border);
             box-shadow: var(--shadow-sm); 
             flex-grow: 1; 
-            min-height: 0; 
-            overflow: hidden; /* Matikan overflow utama agar card luar rapi */
+            min-height: 0; /* PENTING agar flex item bisa mengecil & scroll */
             position: relative;
             display: flex;
             flex-direction: column;
-            padding: 16px; /* Memberikan jarak/padding di dalam card utama */
+            padding: 16px;
+            overflow: hidden; /* Mencegah card luar yang ter-scroll */
         }
 
-        /* Judul Card */
+        /* Header Judul Card */
         .card-header {
             margin-bottom: 12px;
             flex-shrink: 0;
         }
 
-        .card-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #475569; /* atau var(--text-muted) */
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Inner Wrapper untuk Tabel (Area berlatar terang/sub-card) */
+        /* Inner Wrapper untuk Tabel */
         .table-wrapper {
-            background: #f8fafc; /* Warna background tipis seperti pada gambar */
+            background: #f8fafc; /* Warna background sub-card */
             border-radius: 10px;
             border: 1px solid var(--border);
             flex-grow: 1;
-            min-height: 0;
-            overflow-x: auto;
-            overflow-y: hidden;
+            min-height: 0; /* PENTING agar flex child mau mengaktifkan scrollbar internal */
+            overflow-x: auto; /* Scroll horizontal jika kolom meluap */
+            overflow-y: auto;  /* UBAH KE AUTO: Memungkinkan scroll vertikal */
             display: flex;
             flex-direction: column;
-            padding: 8px; /* Memberi space di sekitar tabel */
+            padding: 8px;
         }
 
         /* Penyesuaian Table agar mengisi penuh table-wrapper */
@@ -262,14 +254,15 @@
             flex-shrink: 0;
         }
 
-        /* Scrollbar VERTIKAL HANYA DI TBODY (di bawah header) */
+		/* Scrollbar VERTIKAL HANYA DI TBODY */
         tbody {
             display: block;
-            overflow-y: auto;
+            overflow-y: auto; /* Mengaktifkan scroll vertikal pada isi tabel */
             flex-grow: 1;
+            min-height: 0;    /* PENTING untuk mengaktifkan scrollbar di flexbox */
             width: 100%;
         }
-
+		
         tbody tr {
             display: table;
             width: 100%;
