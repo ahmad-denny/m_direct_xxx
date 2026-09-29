@@ -220,46 +220,44 @@
             flex-shrink: 0;
         }
 
-        /* Inner Wrapper untuk Tabel */
+/* Inner Wrapper tempat Scrollbar Vertikal berada */
         .table-wrapper {
-            background: #f8fafc; /* Warna background sub-card */
+            background: #f8fafc; 
             border-radius: 10px;
             border: 1px solid var(--border);
             flex-grow: 1;
-            min-height: 0; /* PENTING agar flex child mau mengaktifkan scrollbar internal */
-            overflow-x: auto; /* Scroll horizontal jika kolom meluap */
-            overflow-y: auto;  /* UBAH KE AUTO: Memungkinkan scroll vertikal */
-            display: flex;
-            flex-direction: column;
+            min-height: 0;         /* Mengizinkan wrapper mengecil dan memicu scrollbar */
+            overflow-y: auto;       /* AKTIFKAN SCROLLBAR VERTIKAL DI SINI */
+            overflow-x: auto;       /* Scroll horizontal jika layar sempit */
             padding: 8px;
         }
 
-        /* Penyesuaian Table agar mengisi penuh table-wrapper */
+        body.dark-mode .table-wrapper {
+            background: rgba(31, 41, 55, 0.5);
+        }
+
+        /* Table kembali ke layout standar agar dimensi & scrollbar terbaca akurat */
         table { 
             width: 100%; 
             border-collapse: collapse; 
             text-align: left; 
             table-layout: fixed; 
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            background: transparent;
         }
 
-        /* Thead tetap di atas tanpa scrollbar */
+        /* Header tetap mengambang di atas saat di-scroll */
         thead {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--surface);
         }
 
-		/* Scrollbar VERTIKAL HANYA DI TBODY */
+        thead tr { 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
+        }
+
+        /* tbody tidak lagi dijadikan display:block agar baris tabel utuh */
         tbody {
-            display: block;
-            overflow-y: auto; /* Mengaktifkan scroll vertikal pada isi tabel */
-            flex-grow: 1;
-            min-height: 0;    /* PENTING untuk mengaktifkan scrollbar di flexbox */
             width: 100%;
         }
 		
