@@ -199,18 +199,50 @@
         .canvas-container { position: relative; height: calc(100% - 30px); width: 100%; }
 
 /* Table Area - Scrollbar di bawah header tabel */
+		/* Container Card Utama */
         .table-container {
-            background: var(--surface); border-radius: 10px; border: 1px solid var(--border);
+            background: var(--surface); 
+            border-radius: 12px; 
+            border: 1px solid var(--border);
             box-shadow: var(--shadow-sm); 
-            flex-grow: 1; /* Mengambil sisa ruang vertikal */
-            min-height: 0; /* Penting untuk flex child agar bisa shrink & scroll */
-            overflow-x: auto; /* Scrollbar horizontal jika kolom meluap */
-            overflow-y: hidden; /* Matikan scroll pada container luar agar header tidak ikut ter-scroll */
+            flex-grow: 1; 
+            min-height: 0; 
+            overflow: hidden; /* Matikan overflow utama agar card luar rapi */
             position: relative;
             display: flex;
             flex-direction: column;
+            padding: 16px; /* Memberikan jarak/padding di dalam card utama */
         }
-        
+
+        /* Judul Card */
+        .card-header {
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569; /* atau var(--text-muted) */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Inner Wrapper untuk Tabel (Area berlatar terang/sub-card) */
+        .table-wrapper {
+            background: #f8fafc; /* Warna background tipis seperti pada gambar */
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            flex-grow: 1;
+            min-height: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 8px; /* Memberi space di sekitar tabel */
+        }
+
+        /* Penyesuaian Table agar mengisi penuh table-wrapper */
         table { 
             width: 100%; 
             border-collapse: collapse; 
@@ -219,6 +251,7 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            background: transparent;
         }
 
         /* Thead tetap di atas tanpa scrollbar */
@@ -828,17 +861,22 @@
         </div>
     </div>
 
-    <!-- Data Table -->
+	<!-- Data Table -->
     <div class="table-container" id="dataTableContainer">
-		<div class="card-header">
-            <h3 class="card-title">Detailed Breakdown</h3>
-        </div>		
-        <table id="dataTable">
-            <thead><tr id="tableHead"></tr></thead>
-            <tbody id="tableBody"></tbody>
-        </table>
+        <!-- Header Judul Card -->
+        <div class="card-header">
+            <h3 class="card-title">DETAILED BREAKDOWN</h3>
+        </div>
+
+        <!-- Inner Wrapper untuk memberi space/padding pada tabel -->
+        <div class="table-wrapper">
+            <table id="dataTable">
+                <thead><tr id="tableHead"></tr></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
     </div>
-    <!--
+	<!--
     <div class="footer">Typing, Create, Update, Repeat | RBPM - Region Sumatera</div>
 	-->
 </div>
