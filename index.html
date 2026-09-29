@@ -220,37 +220,44 @@
             flex-shrink: 0;
         }
 
-/* Inner Wrapper untuk Tabel & Tempat Scrollbar Vertikal */
+/* Inner Wrapper untuk Tabel */
         .table-wrapper {
             background: #f8fafc; 
             border-radius: 10px;
             border: 1px solid var(--border);
-            flex-grow: 1;
-            min-height: 0;
-            overflow-y: auto;       /* Scrollbar Vertikal Aktif */
+            
+            /* PEMBATAS TINGGI AGAR SCROLLBAR MUNCUL */
+            max-height: 400px;      /* Sesuaikan tinggi maksimal tabel (misal: 350px - 500px) */
+            overflow-y: auto;       /* Memaksa Scrollbar Vertikal muncul jika baris > tinggi max */
             overflow-x: auto;       /* Scrollbar Horizontal jika layar sempit */
+            
             padding: 8px;
+            position: relative;
         }
 
         body.dark-mode .table-wrapper {
             background: rgba(31, 41, 55, 0.5);
         }
 
-        /* PERBAIKAN: Gunakan display: table secara penuh */
+        /* Tabel Standar */
         table { 
             width: 100%; 
             border-collapse: collapse; 
             text-align: left; 
-            table-layout: auto;      /* UBAH KE AUTO agar lebar kolom menyesuaikan teks */
-            min-width: 900px;        /* Menjaga tabel tidak terlalu sempit */
+            table-layout: auto;
+            min-width: 900px;
         }
 
-        /* Header tetap menempel di atas saat di-scroll */
+        /* Header Tetap Menempel di Atas Saat Di-scroll */
         thead {
             position: sticky;
-            top: -8px;               /* Disesuaikan dengan padding .table-wrapper */
+            top: -8px;               /* Mengompensasi padding 8px dari .table-wrapper */
             z-index: 10;
-            background: var(--surface);
+            background: #f8fafc;     /* Samakan background header dengan .table-wrapper */
+        }
+
+        body.dark-mode thead {
+            background: #1f2937;
         }
 
         thead tr { 
@@ -258,7 +265,7 @@
         }
 
         th {
-            background: #f9fafb; 
+            background: #f8fafc; 
             color: var(--text-main); 
             font-weight: 700; 
             font-size: 11px;
@@ -267,10 +274,8 @@
             padding: 10px 12px;
             border-bottom: 2px solid var(--border); 
             cursor: pointer; 
-            white-space: nowrap;     /* KUNCI: Mencegah judul kolom patah turun */
+            white-space: nowrap;
         }
-
-        body.dark-mode th { background: #1f2937; }
 
         td {
             padding: 10px 12px; 
@@ -279,12 +284,20 @@
             border-bottom: 1px solid var(--border); 
             font-size: 12px; 
             line-height: 1.4;
-            white-space: nowrap;     /* KUNCI UTAMA: Mencegah teks bertumpuk ke bawah */
+            white-space: nowrap;
         }
 
-        tbody tr:last-child td { border-bottom: none; }
-        tbody tr:hover { background: #f1f5f9; }
-        body.dark-mode tbody tr:hover { background: #374151; }
+        tbody tr:last-child td { 
+            border-bottom: none; 
+        }
+
+        tbody tr:hover { 
+            background: #f1f5f9; 
+        }
+
+        body.dark-mode tbody tr:hover { 
+            background: #374151; 
+        }
 
         /* Column Widths Desktop */
         th:nth-child(1), td:nth-child(1) { width: 10%; }
