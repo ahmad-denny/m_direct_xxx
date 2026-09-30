@@ -602,36 +602,28 @@
                 height: calc(100% - 40px) !important; 
             }
 
-            /* Tabel mobile: lebar minimum dijaga agar kolom tidak saling menimpa.
-               Jika layar lebih sempit, .table-wrapper bisa digeser horizontal. */
-            table { min-width: 540px; }
-            th, td { box-sizing: border-box; overflow: hidden; }
-
+            table { table-layout: auto; min-width: 100%; }
+            
             th:nth-child(2), td:nth-child(2) { display: none; }
-            th:nth-child(5), td:nth-child(5) { display: none; }
             th:nth-child(7), td:nth-child(7) { display: none; }
             th:nth-child(10), td:nth-child(10) { display: none; }
             th:nth-child(11), td:nth-child(11) { display: none; }
 
-            /* Kolom: Period | Name | Position | Login | Call | Visit */
-            th:nth-child(1), td:nth-child(1) { width: 17%; font-size: 10px; white-space: nowrap; }
-            th:nth-child(3), td:nth-child(3) { width: 27%; white-space: normal; word-break: break-word; }
-            th:nth-child(4), td:nth-child(4) { width: 22%; font-size: 11px; white-space: normal; word-break: break-word; }
-            th:nth-child(6), td:nth-child(6) { width: 11%; text-align: center; font-size: 11px; }
-            th:nth-child(8), td:nth-child(8) { width: 11%; text-align: right; font-size: 11px; }
-            th:nth-child(9), td:nth-child(9) { width: 12%; text-align: right; font-size: 11px; }
+            th:nth-child(1), td:nth-child(1) { width: 18%; font-size: 10px; } 
+            th:nth-child(3), td:nth-child(3) { width: 25%; } 
+            th:nth-child(4), td:nth-child(4) { width: 20%; font-size: 11px; } 
+            
+            th:nth-child(5), td:nth-child(5) { display: none; } 
 
-            /* HP layar lebih lebar / tablet kecil: tampilkan kolom Branch */
             @media (min-width: 480px) {
-                table { min-width: 680px; }
-                th:nth-child(5), td:nth-child(5) { display: table-cell; width: 16%; white-space: normal; word-break: break-word; }
-                th:nth-child(1), td:nth-child(1) { width: 14%; }
-                th:nth-child(3), td:nth-child(3) { width: 22%; }
-                th:nth-child(4), td:nth-child(4) { width: 18%; }
-                th:nth-child(6), td:nth-child(6) { width: 10%; }
-                th:nth-child(8), td:nth-child(8) { width: 10%; }
-                th:nth-child(9), td:nth-child(9) { width: 10%; }
+                 th:nth-child(5), td:nth-child(5) { display: table-cell; width: 20%; }
+                 th:nth-child(3), td:nth-child(3) { width: 22%; }
+                 th:nth-child(4), td:nth-child(4) { width: 18%; }
             }
+
+            th:nth-child(6), td:nth-child(6) { width: 12%; text-align: center; font-size: 11px; } 
+            th:nth-child(8), td:nth-child(8) { width: 12%; text-align: right; font-size: 11px; } 
+            th:nth-child(9), td:nth-child(9) { width: 12%; text-align: right; font-size: 11px; } 
 
             th { padding: 8px 4px; font-size: 10px; }
             td { padding: 6px 4px; font-size: 11px; }
