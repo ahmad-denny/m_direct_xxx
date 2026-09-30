@@ -602,35 +602,90 @@
                 height: calc(100% - 40px) !important; 
             }
 
-            /* Tabel mobile: lebar minimum dijaga agar kolom tidak saling menimpa.
-               Jika layar lebih sempit, .table-wrapper bisa digeser horizontal. */
-            table { min-width: 540px; }
+            /* =====================================================
+               TABEL MOBILE: kolom Period, Name, Position di-freeze.
+               .table-wrapper jadi satu-satunya area scroll (X & Y),
+               scrollbar disembunyikan, header ikut sticky di atas.
+               ===================================================== */
+            .table-wrapper {
+                display: block;
+                padding: 0;
+                overflow: auto;
+                max-height: 60dvh;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;          /* Firefox */
+                -ms-overflow-style: none;       /* IE/Edge lama */
+            }
+            .table-wrapper::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+            table {
+                display: table;
+                table-layout: fixed;
+                border-collapse: separate;      /* wajib agar border ikut sticky */
+                border-spacing: 0;
+                width: 370px;                   /* jumlah lebar kolom di bawah */
+                min-width: 370px;
+            }
+            thead { display: table-header-group; padding-right: 0; border-bottom: none; }
+            tbody { display: table-row-group; max-height: none; overflow: visible; }
+            thead tr, tbody tr { display: table-row; }
+
             th, td { box-sizing: border-box; overflow: hidden; }
 
-            th:nth-child(2), td:nth-child(2) { display: none; }
-            th:nth-child(5), td:nth-child(5) { display: none; }
-            th:nth-child(7), td:nth-child(7) { display: none; }
-            th:nth-child(10), td:nth-child(10) { display: none; }
+            /* Kolom yang disembunyikan di mobile */
+            th:nth-child(2), td:nth-child(2),
+            th:nth-child(5), td:nth-child(5),
+            th:nth-child(7), td:nth-child(7),
+            th:nth-child(10), td:nth-child(10),
             th:nth-child(11), td:nth-child(11) { display: none; }
 
-            /* Kolom: Period | Name | Position | Login | Call | Visit */
-            th:nth-child(1), td:nth-child(1) { width: 17%; font-size: 10px; white-space: nowrap; }
-            th:nth-child(3), td:nth-child(3) { width: 27%; white-space: normal; word-break: break-word; }
-            th:nth-child(4), td:nth-child(4) { width: 22%; font-size: 11px; white-space: normal; word-break: break-word; }
-            th:nth-child(6), td:nth-child(6) { width: 11%; text-align: center; font-size: 11px; }
-            th:nth-child(8), td:nth-child(8) { width: 11%; text-align: right; font-size: 11px; }
-            th:nth-child(9), td:nth-child(9) { width: 12%; text-align: right; font-size: 11px; }
+            /* Lebar kolom: Period | Name | Position | Login | Call | Visit */
+            th:nth-child(1), td:nth-child(1) { width: 54px; white-space: nowrap; }
+            th:nth-child(3), td:nth-child(3) { width: 84px; }
+            th:nth-child(4), td:nth-child(4) { width: 76px; }
+            th:nth-child(6), td:nth-child(6) { width: 52px; text-align: center; }
+            th:nth-child(8), td:nth-child(8) { width: 52px; text-align: right; }
+            th:nth-child(9), td:nth-child(9) { width: 52px; text-align: right; }
 
-            /* HP layar lebih lebar / tablet kecil: tampilkan kolom Branch */
+            /* Header sticky di atas */
+            th { position: sticky; top: 0; z-index: 3; background: #f8fafc; border-bottom: 2px solid var(--border); }
+            body.dark-mode th { background: #1f2937; }
+
+            /* Freeze 3 kolom kiri (left = akumulasi lebar kolom sebelumnya) */
+            th:nth-child(1), td:nth-child(1),
+            th:nth-child(3), td:nth-child(3),
+            th:nth-child(4), td:nth-child(4) { position: sticky; }
+            th:nth-child(1), td:nth-child(1) { left: 0; }
+            th:nth-child(3), td:nth-child(3) { left: 54px; }
+            th:nth-child(4), td:nth-child(4) { left: 138px; border-right: 1px solid var(--border); }
+
+            td:nth-child(1), td:nth-child(3), td:nth-child(4) { z-index: 2; }
+            th:nth-child(1), th:nth-child(3), th:nth-child(4) { z-index: 5; }
+
+            td { background: #ffffff; }
+            body.dark-mode td { background: #1f2937; }
+            tbody tr:hover td { background: #f8fafc; }
+            body.dark-mode tbody tr:hover td { background: #374151; }
+
+            /* Period tampil 29-09-26 (teks asli tetap utuh untuk filter/sort) */
+            td:nth-child(1) { font-size: 0; }
+            td:nth-child(1)::after { content: attr(data-short); font-size: 10px; }
+
+            /* Name & Position maksimal 2 baris */
+            .cell-clamp {
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+                overflow: hidden;
+                white-space: normal;
+                word-break: break-word;
+                line-height: 1.25;
+            }
+
+            /* Layar >=480px: kolom Branch ikut tampil (bisa digeser) */
             @media (min-width: 480px) {
-                table { min-width: 680px; }
-                th:nth-child(5), td:nth-child(5) { display: table-cell; width: 16%; white-space: normal; word-break: break-word; }
-                th:nth-child(1), td:nth-child(1) { width: 14%; }
-                th:nth-child(3), td:nth-child(3) { width: 22%; }
-                th:nth-child(4), td:nth-child(4) { width: 18%; }
-                th:nth-child(6), td:nth-child(6) { width: 10%; }
-                th:nth-child(8), td:nth-child(8) { width: 10%; }
-                th:nth-child(9), td:nth-child(9) { width: 10%; }
+                table { width: 460px; min-width: 460px; }
+                th:nth-child(5), td:nth-child(5) { display: table-cell; width: 90px; white-space: normal; word-break: break-word; }
             }
 
             th { padding: 8px 4px; font-size: 10px; }
@@ -1276,6 +1331,18 @@
         else document.getElementById('statRate').textContent = '—';
     }
 
+    function formatPeriodShort(v) {
+        const str = (v == null ? '' : String(v)).trim();
+        const mon = {jan:1,feb:2,mar:3,apr:4,may:5,mei:5,jun:6,jul:7,aug:8,agu:8,agt:8,sep:9,oct:10,okt:10,nov:11,dec:12,des:12};
+        let m = str.match(/^(\d{1,2})[\s\-\/]([A-Za-z]{3})[A-Za-z]*[\s\-\/](\d{4})$/);
+        if (m && mon[m[2].toLowerCase()]) {
+            return m[1].padStart(2,'0') + '-' + String(mon[m[2].toLowerCase()]).padStart(2,'0') + '-' + m[3].slice(-2);
+        }
+        m = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (m) return m[3] + '-' + m[2] + '-' + m[1].slice(-2);
+        return str;
+    }
+
     function populateTable(data) {
         const tableHead = document.getElementById('tableHead');
         const tableBody = document.getElementById('tableBody');
@@ -1305,6 +1372,18 @@
                 const val = (row[header] == null) ? "" : row[header];
                 td.textContent = val;
                 td.setAttribute('data-label', columnLabels[header] || header);
+
+                // Kolom pertama (Period): siapkan versi pendek dd-mm-yy untuk tampilan mobile
+                if (index === 0) td.setAttribute('data-short', formatPeriodShort(val));
+                // Name & Position: bungkus agar bisa dibatasi 2 baris di mobile
+                if (index === 2 || index === 3) {
+                    td.textContent = '';
+                    const box = document.createElement('div');
+                    box.className = 'cell-clamp';
+                    box.textContent = val;
+                    td.title = val;
+                    td.appendChild(box);
+                }
 
                 // Pastikan event listener terpasang dengan benar
                 if (header === "Marketing Name" || index === 2) {
