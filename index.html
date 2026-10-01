@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">	
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<!-- Export libraries (gambar & Excel) -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
         :root {
@@ -757,6 +760,41 @@
 			border-bottom: transparent;			
 		}	
 		
+
+		/* ===== Tombol Capture / Export Tabel ===== */
+		.export-wrap { position: relative; flex-shrink: 0; }
+		.export-btn {
+		    display: inline-flex; align-items: center; gap: 8px;
+		    background: var(--primary-blue); color: #fff;
+		    border: none; border-radius: 8px;
+		    padding: 8px 12px; font-size: 13px; cursor: pointer;
+		    box-shadow: 0 1px 3px rgba(109,40,217,0.35);
+		    transition: background .2s, transform .1s;
+		}
+		.export-btn:hover { background: #5b21b6; }
+		.export-btn:active { transform: scale(0.97); }
+		.export-btn:disabled { opacity: .65; cursor: wait; }
+		.export-btn .fa-chevron-down { font-size: 10px; transition: transform .2s; }
+		.export-wrap.open .export-btn .fa-chevron-down { transform: rotate(180deg); }
+		.export-menu {
+		    display: none; position: absolute; right: 0; top: calc(100% + 6px);
+		    min-width: 180px; padding: 6px;
+		    background: var(--surface); border: 1px solid var(--border);
+		    border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+		    z-index: 60;
+		}
+		.export-wrap.open .export-menu { display: block; }
+		.export-item {
+		    display: flex; align-items: center; gap: 10px; width: 100%;
+		    background: none; border: none; text-align: left; cursor: pointer;
+		    padding: 10px 12px; border-radius: 6px;
+		    font-size: 13px; color: var(--text-main);
+		}
+		.export-item:hover { background: rgba(139,92,246,0.1); }
+		.export-item i { width: 16px; text-align: center; font-size: 14px; }
+		.export-item .fa-image { color: var(--purple); }
+		.export-item .fa-file-excel { color: var(--green); }
+		
     </style>
 </head>
 <body class="light h-screen h-[100dvh] flex overflow-hidden relative" oncontextmenu="return false;" onkeydown="return blockShortcuts(event);" ondragstart="return false;">
@@ -945,6 +983,20 @@
         <!-- Header Judul Card -->
         <div class="card-header">
             <h3 class="card-title">DETAILED BREAKDOWN</h3>
+            <div class="export-wrap" id="exportWrap">
+                <button type="button" class="export-btn" id="exportBtn" onclick="toggleExportMenu(event)" title="Capture / Download tabel">
+                    <i class="fa-solid fa-camera"></i>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="export-menu" id="exportMenu">
+                    <button type="button" class="export-item" onclick="exportTableAsImage()">
+                        <i class="fa-solid fa-image"></i><span>Save as Image</span>
+                    </button>
+                    <button type="button" class="export-item" onclick="exportTableAsExcel()">
+                        <i class="fa-solid fa-file-excel"></i><span>Save as Excel</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Inner Wrapper untuk memberi space/padding pada tabel -->
@@ -1425,6 +1477,159 @@
         
         filterAndSearchTable();
         closeChart(); // Pastikan chart tertutup saat inisialisasi
+    }
+
+    // =========================================
+    // EXPORT TABEL (GAMBAR & EXCEL)
+    // =========================================
+    function toggleExportMenu(e) {
+        if (e) e.stopPropagation();
+        document.getElementById('exportWrap').classList.toggle('open');
+    }
+    function closeExportMenu() {
+        const w = document.getElementById('exportWrap');
+        if (w) w.classList.remove('open');
+    }
+    document.addEventListener('click', function (e) {
+        const w = document.getElementById('exportWrap');
+        if (w && !w.contains(e.target)) closeExportMenu();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeExportMenu(); });
+
+    // Ambil header + baris yang sedang tampil (sesuai filter/pencarian/sort saat ini)
+    function getVisibleTableData() {
+        const head = Array.from(document.querySelectorAll('#tableHead th'))
+            .map(th => (th.childNodes[0] ? th.childNodes[0].textContent : th.textContent).trim());
+        const rows = [];
+        document.querySelectorAll('#tableBody tr').forEach(tr => {
+            if (tr.style.display === 'none') return;
+            rows.push(Array.from(tr.cells).map(td => {
+                const cls = (td.className || '');
+                return { text: td.textContent.trim(), red: cls.includes('highlight-red'), green: cls.includes('highlight-yes') };
+            }));
+        });
+        return { head, rows };
+    }
+
+    function exportFileStamp() {
+        const d = new Date(), p = n => String(n).padStart(2, '0');
+        return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes());
+    }
+
+    function exportNoData() {
+        Swal.fire({ icon: 'warning', title: 'Tidak ada data', text: 'Tabel kosong, tidak ada yang bisa diunduh.', confirmButtonColor: '#6d28d9' });
+    }
+
+    function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }
+
+    // ---------- SAVE AS IMAGE ----------
+    async function exportTableAsImage() {
+        closeExportMenu();
+        const { head, rows } = getVisibleTableData();
+        if (!head.length || !rows.length) return exportNoData();
+        if (typeof html2canvas === 'undefined') {
+            return Swal.fire({ icon: 'error', title: 'Gagal', text: 'Library gambar belum termuat. Periksa koneksi internet lalu coba lagi.', confirmButtonColor: '#6d28d9' });
+        }
+
+        const btn = document.getElementById('exportBtn');
+        btn.disabled = true;
+
+        const dark = document.body.classList.contains('dark-mode');
+        const c = dark
+            ? { bg: '#1f2937', text: '#f9fafb', muted: '#9ca3af', head: '#374151', border: '#374151', red: '#f87171', green: '#34d399' }
+            : { bg: '#ffffff', text: '#1f2937', muted: '#6b7280', head: '#f1f5f9', border: '#e5e7eb', red: '#ef4444', green: '#10b981' };
+        const centerCols = [5, 6], rightCols = [7, 8];
+        const alignOf = i => centerCols.includes(i) ? 'center' : (rightCols.includes(i) ? 'right' : 'left');
+
+        // Susun tabel versi "cetak" (semua baris, tanpa scroll) pakai div + grid agar bebas dari CSS tabel utama
+        const host = document.createElement('div');
+        host.style.cssText = 'position:fixed;left:0;top:0;z-index:-1;pointer-events:none;'
+            + 'padding:20px;background:' + c.bg + ';color:' + c.text + ';font-family:\'Plus Jakarta Sans\',Inter,sans-serif;width:max-content;';
+
+        const title = document.createElement('div');
+        title.style.cssText = 'font-size:16px;font-weight:700;letter-spacing:.5px;margin-bottom:2px;';
+        title.textContent = 'DETAILED BREAKDOWN';
+        const sub = document.createElement('div');
+        sub.style.cssText = 'font-size:11px;color:' + c.muted + ';margin-bottom:12px;';
+        sub.textContent = rows.length + ' baris  \u2022  ' + new Date().toLocaleString('id-ID');
+        host.appendChild(title); host.appendChild(sub);
+
+        const grid = document.createElement('div');
+        grid.style.cssText = 'display:grid;grid-template-columns:repeat(' + head.length + ',max-content);'
+            + 'border:1px solid ' + c.border + ';border-radius:8px;overflow:hidden;';
+        const mkCell = (txt, i, isHead, last, color, bold) => {
+            const d = document.createElement('div');
+            d.textContent = txt;
+            d.style.cssText = 'padding:9px 14px;font-size:' + (isHead ? 11 : 12) + 'px;white-space:nowrap;text-align:' + alignOf(i) + ';'
+                + 'border-bottom:' + (last ? 'none' : '1px solid ' + c.border) + ';'
+                + (isHead ? 'background:' + c.head + ';font-weight:700;text-transform:uppercase;letter-spacing:.5px;'
+                          : 'font-weight:' + (bold ? 600 : 400) + ';')
+                + 'color:' + (color || c.text) + ';';
+            return d;
+        };
+        head.forEach((h, i) => grid.appendChild(mkCell(h, i, true, false)));
+        rows.forEach((r, ri) => {
+            const last = ri === rows.length - 1;
+            r.forEach((cell, i) => {
+                const color = cell.red ? c.red : (cell.green ? c.green : null);
+                grid.appendChild(mkCell(cell.text, i, false, last, color, !!color));
+            });
+        });
+        host.appendChild(grid);
+        document.body.appendChild(host);
+
+        try {
+            if (document.fonts && document.fonts.ready) await document.fonts.ready;
+            const canvas = await html2canvas(host, {
+                backgroundColor: c.bg,
+                scale: Math.min(2, window.devicePixelRatio || 2),
+                useCORS: true,
+                scrollX: 0, scrollY: 0
+            });
+            const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+            if (!blob) throw new Error('Canvas kosong / terlalu besar');
+            downloadBlob(blob, 'Detailed_Breakdown_' + exportFileStamp() + '.png');
+        } catch (err) {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: 'Gagal membuat gambar', text: 'Data mungkin terlalu banyak. Coba filter dulu atau gunakan Save as Excel.', confirmButtonColor: '#6d28d9' });
+        } finally {
+            host.remove();
+            btn.disabled = false;
+        }
+    }
+
+    // ---------- SAVE AS EXCEL ----------
+    function exportTableAsExcel() {
+        closeExportMenu();
+        const { head, rows } = getVisibleTableData();
+        if (!head.length || !rows.length) return exportNoData();
+        if (typeof XLSX === 'undefined') {
+            return Swal.fire({ icon: 'error', title: 'Gagal', text: 'Library Excel belum termuat. Periksa koneksi internet lalu coba lagi.', confirmButtonColor: '#6d28d9' });
+        }
+        try {
+            // Angka murni -> number; kode berawalan 0 / terlalu panjang (NIK, Agent Code) tetap teks
+            const toVal = t => (/^-?(0|[1-9]\d{0,14})(\.\d+)?$/.test(t)) ? Number(t) : t;
+            const aoa = [head].concat(rows.map(r => r.map(c => toVal(c.text))));
+            const ws = XLSX.utils.aoa_to_sheet(aoa);
+            ws['!cols'] = head.map((h, i) => {
+                let max = h.length;
+                rows.forEach(r => { if (r[i] && r[i].text.length > max) max = r[i].text.length; });
+                return { wch: Math.min(Math.max(max + 2, 8), 40) };
+            });
+            ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: aoa.length - 1, c: head.length - 1 } }) };
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Detailed Breakdown');
+            XLSX.writeFile(wb, 'Detailed_Breakdown_' + exportFileStamp() + '.xlsx');
+        } catch (err) {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: 'Gagal membuat Excel', text: String(err.message || err), confirmButtonColor: '#6d28d9' });
+        }
     }
 
     function filterAndSearchTable() {
