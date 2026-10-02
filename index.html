@@ -739,6 +739,38 @@
             transition: all 0.3s ease; flex-shrink: 0; text-decoration: none;
         }
         .action-btn:hover { transform: scale(1.08); }
+
+        /* Elemen khusus mobile: sembunyi di desktop */
+        .sidebar-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .sidebar-logo { width: 34px; height: 34px; object-fit: contain; flex-shrink: 0; }
+        .reset-header-btn { display: none; }
+
+        @media screen and (max-width: 768px) {
+            /* Logo pindah ke sidebar */
+            .header-banner .logo-wrapper { display: none; }
+
+            /* Reset & Logout: tanpa shadow, warna lembut sesuai fungsi */
+            .reset-header-btn { display: flex; }
+            .reset-header-btn,
+            .logout-btn {
+                box-shadow: none;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+            .reset-header-btn {
+                background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe;
+            }
+            .reset-header-btn:hover { background: #6d28d9; color: #ffffff; border-color: #6d28d9; }
+            .logout-btn {
+                background: #fef2f2; color: #ef4444; border: 1px solid #fecaca;
+            }
+            .logout-btn:hover { background: #ef4444; color: #ffffff; border-color: #ef4444; }
+
+            body.dark-mode .reset-header-btn { background: rgba(139,92,246,0.15); color: #c4b5fd; border-color: rgba(139,92,246,0.4); }
+            body.dark-mode .reset-header-btn:hover { background: #8b5cf6; color: #ffffff; border-color: #8b5cf6; }
+            body.dark-mode .logout-btn { background: rgba(239,68,68,0.15); color: #fca5a5; border-color: rgba(239,68,68,0.4); }
+            body.dark-mode .logout-btn:hover { background: #ef4444; color: #ffffff; border-color: #ef4444; }
+        }
 		
 		/* Style Header Card untuk Tabel */
 		.card-header {
@@ -906,6 +938,9 @@
                     </div>
                 </div>
             </div>
+            <button class="action-btn reset-header-btn" id="reset-header-btn" title="Reset" onclick="resetSidebarFilters()" aria-label="Reset">
+                <i class="fas fa-rotate-left"></i>
+            </button>
             <button class="action-btn logout-btn" id="logout-btn" title="Logout" style="display:none;" aria-label="Logout">
 	            <i class="fas fa-right-from-bracket"></i>
             </button>                
@@ -1016,7 +1051,10 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <h3>M-Direct</h3>
+        <div class="sidebar-brand">
+            <img src="img/BMI.png" alt="Logo" class="sidebar-logo" width="34" height="34" onerror="this.style.display='none'">
+            <h3>M-Direct</h3>
+        </div>
         <button class="sidebar-close" onclick="toggleSidebar()">
             <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -1068,13 +1106,12 @@
         </div>
     </div>
     
-    <!-- Actions -->
+    <!-- Actions (tombol Reset dipindah ke header) -->
+    <!--
     <div class="sidebar-actions">
-        <!--
         <button class="btn" onclick="applySidebarFilters()">Apply Filters</button>
-        -->
-        <button class="btn" onclick="resetSidebarFilters()" style="background: var(--text-muted);">Reset</button>
     </div>
+    -->
 </div>
 
 <script>
